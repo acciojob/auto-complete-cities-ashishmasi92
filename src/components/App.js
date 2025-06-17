@@ -1,75 +1,53 @@
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import './../styles/App.css';
 import indianCities from "./indiancities";
 
 const App = () => {
-  let [inputVal,setInputVal] = useState("")
-  let [cities,setCities] = useState([])
-  let [showSuggestion,setShowSuggestion] = useState(false)
+  let [show, setShow] = useState(false)
+  let [cities, setCities] = useState("")
+  let [getCities, setGetCities] = useState(null)
+
+  function searchCity() {
+    let x = indianCities.filter((v) => {
+      return v.toLowerCase().includes(cities)
+    })
+
+    setGetCities(x)
+    console.log(x);
 
 
-  useEffect(()=>{
-    if(inputVal!=""){
-
-      let x = getCities()
-      setCities(x)
-      setShowSuggestion(true)
-    }
-  },[inputVal])
-   
-  function searchCity(e){
-    let {value} = e.target 
-    setInputVal(value)
   }
-    
-function getCities(){
-  return indianCities.filter((v)=>{
-    return v.toLowerCase().includes(inputVal.toLowerCase())
-  })
-}
+
+  useEffect(() => {
+    searchCity()
+  }, [cities])
 
 
-function selectedCity(v){
-  setInputVal(v)
-  setCities([])
-  setShowSuggestion(false)
-}
+  console.log(cities);
 
 
-
- 
-  
   return (
 
 
-    <div>
-
-<form>
-  <label htmlFor="search"> Search cities of india
-  </label>
-    <input style={{display:"block", height:"30px", width:"300px", fontSize:"20px" }} type="text" onChange={searchCity} value={inputVal} />
-</form>
-
-{
-  showSuggestion&& inputVal && cities.length>0&&(
-    <ul>
-      {
-        cities.map((v,i)=>{
-          return <li onClick={()=>{
-            selectedCity(v)
-          }} style={{
-                padding: "8px",
-                cursor: "pointer",
-                borderBottom: "1px solid #ccc",
-              }} key={i}>{v}</li>
-        })
-      }
-    </ul>
-  )
-}
-
-
+    <div style={{ display: "flex", flexDirection: "column", alignContent: "flex-start" }}>
+      <h1>Search cities of India</h1>
+      <form>
+        <input type="text" style={{ padding: "10px", height: "45px", width: "500px" }} onChange={(e) => {
+          setShow(true)
+          setCities(e.target.value)
+        }} value={cities} />
+      </form>
+      <div style={{ padding: "10px", height: "300px", width: "500px", border: "1px solid black", overflow: "auto" }} >
+        <ul>
+          {getCities && show && getCities.map((v) => {
+            return <li onClick={(e) => {
+              setShow(false)
+              setCities(e.target.textContent.toLowerCase())
+            }} style={{ padding: "10px 20px", border: "1px solid black" }} className="city_name">{v}</li>
+          })}
+        </ul>
+      </div>
 
     </div>
   )
